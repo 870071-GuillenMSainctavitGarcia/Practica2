@@ -6,7 +6,7 @@
 #define PIN_SCL 9
 #define PIN_LED 10
 
-// Estructura de datos
+// Estructura de datos del acelerometro 
 struct DatosAcel {
   float ax, ay, az;
 };
@@ -21,17 +21,17 @@ void TareaComunicacion(void *parameter);
 void setup() {
   // 1. Inicialización de periféricos
   Serial.begin(115200);
-  pinMode(PIN_LED, OUTPUT);
-  digitalWrite(PIN_LED, LOW);
+  pinMode(PIN_LED, OUTPUT); // Configuración del pin del LED como salida
+  digitalWrite(PIN_LED, LOW); // Inicialmente apagado
 
   // Configuración del bus I2C como Maestro
-  Wire.setPins(PIN_SDA, PIN_SCL);
-  Wire.begin();
+  Wire.setPins(PIN_SDA, PIN_SCL); // Configura los pines SDA y SCL para I2C
+  Wire.begin(); // Inicializa el bus I2C como maestro
 
   // 2. Creación de la Cola de FreeRTOS (capacidad para 10 muestras)
   colaAcelerometro = xQueueCreate(10, sizeof(DatosAcel));
 
-  if (colaAcelerometro == NULL) {
+  if (colaAcelerometro == NULL) {//si la cola no se pudo crear, se queda en un bucle infinito
     Serial.println("Error al crear la cola en FreeRTOS");
     while (1);
   }
@@ -41,7 +41,7 @@ void setup() {
   xTaskCreatePinnedToCore(
     TareaMuestreo,
     "MuestreoI2C",
-    3072,
+    3072,//stack size in bytes
     NULL,
     2,
     NULL,
@@ -49,10 +49,11 @@ void setup() {
   );
 
   // Tarea de Comunicación: Procesa datos cada 1 s (Prioridad 1 - Normal)
+
   xTaskCreatePinnedToCore(
     TareaComunicacion,
     "EnvioUART",
-    4096,
+    4096, //stack size in bytes
     NULL,
     1,
     NULL,
@@ -69,6 +70,7 @@ void loop() {
 // TAREA 1: Pide datos por I2C a la Nano cada 100 ms (10 Hz)
 // -----------------------------------------------------------------------------
 void TareaMuestreo(void *parameter) {
+  //va a comenzar la tarea después de 100 ms y luego se va a ejecutar cada 100 ms
   TickType_t xUltimoTiempo = xTaskGetTickCount();
   const TickType_t xFrecuencia = pdMS_TO_TICKS(100);
   DatosAcel muestraRecibida;
@@ -101,7 +103,7 @@ void TareaComunicacion(void *parameter) {
   for (;;) {
     // Esperar hasta acumular 10 muestras de la cola
     for (int i = 0; i < 10; i++) {
-      xQueueReceive(colaAcelerometro, &paquete[i], portMAX_DELAY);
+      xQueueReceive(colaAcelerometro, &paquete[i], portMAX_DELAY); // Bloquea hasta recibir una muestra   
     }
 
     // Encender LED indicativo
