@@ -22,6 +22,7 @@ Abre el Monitor Serie a 115200 baudios.
 
 ## Estructura del Proyecto
 
+´´´ text
 Practica2/
 ├── include/
 │   └── Config.h               # Definiciones globales y estructuras de datos
@@ -37,7 +38,7 @@ Practica2/
 │       └── apartado5.cpp      # Servidor de chat serie por Bluetooth
 ├── platformio.ini             # Entornos de compilación y monitorización de PlatformIO
 └── README.md                  # Documentación principal
-
+```
 
 ## APARTADO 1
 
