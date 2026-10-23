@@ -22,7 +22,7 @@ Abre el Monitor Serie a 115200 baudios.
 
 ## Estructura del Proyecto
 
-´´´ text
+```text
 Practica2/
 ├── include/
 │   └── Config.h               # Definiciones globales y estructuras de datos
